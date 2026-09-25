@@ -25,6 +25,7 @@ export default function App() {
     else if (app === 'settings') openMilana('settings', 'home');
     else if (app === 'notes') openMilana('notes', 'home');
     else if (app === 'maps') openMilana('maps', 'home');
+    else if (app === 'camera') openMilana('camera', 'home');
     else if (app === 'files') setCurrentScreen('files');
     else if (app === 'browser') setCurrentScreen('browser-error');
   };
@@ -34,7 +35,7 @@ export default function App() {
     else setCurrentScreen('home');
   };
 
-  const showGlobalShade = currentScreen !== 'lock' && currentScreen !== 'milana-phone';
+  const showGlobalShade = currentScreen !== 'lock';
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-black">
@@ -57,7 +58,6 @@ export default function App() {
             )}
           </div>
 
-          {/* Разбитый экран — поверх ВСЕГО, клики не блокирует */}
           <BrokenScreen />
         </div>
       </div>

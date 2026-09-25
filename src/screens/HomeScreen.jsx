@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   MessageSquare, Phone, Image, Mail, Globe, Folder, Settings, Camera, Search, FileText, Map as MapIcon,
 } from 'lucide-react';
@@ -30,12 +30,12 @@ const AppIcon = ({ app, onOpen }) => {
       onClick={() => onOpen(app.id)}
       className="flex flex-col items-center justify-center w-20 h-24 active:scale-95 transition-transform duration-100"
     >
-      <div className={`w-14 h-14 ${bgClass} rounded-[20px] flex items-center justify-center shadow-sm`}>
+      <div className={`w-14 h-14 ${bgClass} rounded-[20px] flex items-center justify-center shadow-lg`}>
         <Icon className="text-white" size={28} strokeWidth={1.5} />
       </div>
-      <span className="text-[10px] text-zinc-300 mt-2 font-normal truncate w-full text-center px-1">
-        {name}
-      </span>
+      <span className="app-label text-white mt-2 truncate w-full text-center px-1 drop-shadow-md">
+  {name}
+</span>
     </button>
   );
 };
@@ -44,35 +44,43 @@ export default function HomeScreen({ onOpenApp }) {
   const [notifications] = useState(3);
 
   return (
-    <div className="relative w-full h-full bg-zinc-950 text-white font-sans flex flex-col justify-between p-4 overflow-hidden">
+    <div className="relative w-full h-full text-white font-sans flex flex-col justify-between p-4 overflow-hidden">
 
-      <div className="w-full pt-2 px-2">
-        <div className="w-full h-12 bg-zinc-900 backdrop-blur-sm rounded-2xl flex items-center px-4 gap-3 text-zinc-400 border border-zinc-800">
-          <Search size={18} className="text-zinc-500" />
+      {/* Фон — обои */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/wallpaper.jpg')" }}
+      />
+      {/* Затемнение для читаемости */}
+      <div className="absolute inset-0 bg-black/35" />
+
+      <div className="relative w-full pt-2 px-2">
+        <div className="w-full h-12 bg-zinc-900/60 backdrop-blur-md rounded-2xl flex items-center px-4 gap-3 text-zinc-300 border border-white/10">
+          <Search size={18} className="text-zinc-400" />
           <span className="text-sm font-light">Поиск</span>
         </div>
       </div>
-
-      <div className="grid grid-cols-4 gap-y-4 gap-x-2 px-1 text-center mt-3 mb-auto">
+      
+      <div className="relative grid grid-cols-4 gap-y-4 gap-x-2 px-1 text-center mt-3 mb-auto">
         {APPS.map((app) => (
           <AppIcon key={app.id} app={app} onOpen={onOpenApp} />
         ))}
       </div>
 
-      <div className="flex justify-center gap-1.5 mb-3">
+      <div className="relative flex justify-center gap-1.5 mb-3">
         <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
-        <div className="w-1.5 h-1.5 rounded-full bg-zinc-600"></div>
-        <div className="w-1.5 h-1.5 rounded-full bg-zinc-600"></div>
+        <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+        <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
       </div>
 
-      <div className="w-full flex justify-around px-2 pb-3">
+      <div className="relative w-full flex justify-around px-2 pb-3">
         {DOCK_APPS.map((app) => {
           const { Icon, bgClass } = app;
           return (
             <button
               key={app.id}
               onClick={() => onOpenApp(app.id)}
-              className={`w-14 h-14 ${bgClass} rounded-[20px] flex items-center justify-center shadow-md active:scale-95 transition-transform relative`}
+              className={`w-14 h-14 ${bgClass} rounded-[20px] flex items-center justify-center shadow-lg active:scale-95 transition-transform relative`}
             >
               <Icon className="text-white" size={28} strokeWidth={1.5} />
               {app.id === 'messages' && notifications > 0 && (
@@ -85,7 +93,7 @@ export default function HomeScreen({ onOpenApp }) {
         })}
       </div>
 
-      <div className="w-32 h-1 bg-zinc-700 rounded-full mx-auto mb-2"></div>
+      <div className="relative w-32 h-1 bg-white/40 rounded-full mx-auto mb-2"></div>
     </div>
   );
 }

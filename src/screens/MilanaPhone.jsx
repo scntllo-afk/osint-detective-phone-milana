@@ -10,7 +10,7 @@ import {
 import BatteryToast from '../components/BatteryToast';
 import NotesApp from './NotesApp';
 import MapsApp from './MapsApp';
-// import DarkCall from '../components/DarkCall'; // ← раскомментируй, когда создашь файл
+import CameraApp from './CameraApp';
 
 const CODEWORD = 'orbit';
 
@@ -184,27 +184,15 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [error, setError] = useState('');
   const [codewordInput, setCodewordInput] = useState('');
-  const [time, setTime] = useState(new Date());
 
   const [activeThreadId, setActiveThreadId] = useState(null);
   const [viewingPhoto, setViewingPhoto] = useState(null);
-  const [shadeOpen, setShadeOpen] = useState(false);
   const [toggles, setToggles] = useState({ wifi: true, bluetooth: false, dnd: false, autoBright: true });
-  const dragStartY = useRef(null);
 
   const [glitch, setGlitch] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(0);
   const [showBatteryToast, setShowBatteryToast] = useState(false);
   const [germanThreat, setGermanThreat] = useState(false);
-
-  // 🔴 Фича "Звонок из даркнета" — раскомментируй вместе с импортом DarkCall выше
-  // const [darkCall, setDarkCall] = useState(false);
-  // const [darkCallShown, setDarkCallShown] = useState(false);
-
-  useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 60000);
-    return () => clearInterval(t);
-  }, []);
 
   useEffect(() => {
     if (!unlocked) return;
@@ -223,18 +211,6 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
     const t = setTimeout(() => setGermanThreat(true), 15000);
     return () => clearTimeout(t);
   }, [screen, germanThreat]);
-
-  // 🔴 Фича "Звонок из даркнета" — раскомментируй, когда создашь DarkCall.jsx
-  // useEffect(() => {
-  //   if (darkCallShown) return;
-  //   if (screen === 'gallery' || screen === 'thread') {
-  //     const t = setTimeout(() => {
-  //       setDarkCall(true);
-  //       setDarkCallShown(true);
-  //     }, screen === 'gallery' ? 10000 : 20000);
-  //     return () => clearTimeout(t);
-  //   }
-  // }, [screen, darkCallShown]);
 
   const checkAnswers = () => {
     const correct = answers[currentQuestion]?.toLowerCase().trim() === SECURITY_QUESTIONS[currentQuestion].a;
@@ -266,18 +242,6 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
   const openThread = (id) => {
     setActiveThreadId(id);
     setScreen('thread');
-    setShadeOpen(false);
-  };
-
-  const onBarPointerDown = (e) => {
-    dragStartY.current = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
-  };
-  const onBarPointerUp = (e) => {
-    const endY = e.clientY ?? e.changedTouches?.[0]?.clientY ?? 0;
-    if (dragStartY.current !== null && endY - dragStartY.current > -5) {
-      setShadeOpen(true);
-    }
-    dragStartY.current = null;
   };
 
   // ---------- ЭКРАН БЛОКИРОВКИ ----------
@@ -353,11 +317,10 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
   }
 
   const activeThread = THREADS.find((t) => t.id === activeThreadId);
-  const anyUnread = THREADS.some((t) => t.unread);
 
   // ---------- ОСНОВНОЙ ИНТЕРФЕЙС ----------
   return (
-    <div className="relative w-full h-full bg-zinc-950 text-white font-sans flex flex-col overflow-hidden select-none">
+    <div className="relative w-full h-full bg-zinc-950 text-white font-sans flex flex-col overflow-hidden select-none pt-8">
 
       {glitch && (
         <div
@@ -398,22 +361,6 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
           </div>
         </div>
       )}
-
-      <div
-        onMouseDown={onBarPointerDown}
-        onMouseUp={onBarPointerUp}
-        onTouchStart={onBarPointerDown}
-        onTouchEnd={onBarPointerUp}
-        className="flex justify-between items-center px-4 pt-3 pb-2 text-xs font-medium text-zinc-400 flex-shrink-0 cursor-pointer active:bg-white/5 transition-colors"
-      >
-        <span>{time.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
-        <ChevronDown size={13} className="text-zinc-600" />
-        <div className="flex gap-1 items-center">
-          {anyUnread && <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>}
-          <span>📶</span>
-          <span>🔋</span>
-        </div>
-      </div>
 
       <div className="flex-1 overflow-hidden relative">
 
@@ -527,6 +474,7 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
 
         {screen === 'notes' && <NotesApp onBack={onBack} />}
         {screen === 'maps' && <MapsApp onBack={onBack} />}
+        {screen === 'camera' && <CameraApp onBack={onBack} />}
       </div>
 
       {viewingPhoto && (
@@ -538,72 +486,6 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
           <div className="text-xs text-zinc-500 mt-3">{viewingPhoto.name}</div>
         </div>
       )}
-
-      <div className={`absolute inset-0 z-[80] transition-opacity duration-300 ${shadeOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-black/50" onClick={() => setShadeOpen(false)} />
-        <div className={`absolute top-0 left-0 right-0 bg-zinc-900/95 backdrop-blur-md rounded-b-[28px] shadow-2xl transition-transform duration-300 ease-out ${
-          shadeOpen ? 'translate-y-0' : '-translate-y-full'
-        }`}>
-          <div className="pt-8 pb-3 px-4">
-            <div className="grid grid-cols-4 gap-2 mb-4">
-              {[
-                { key: 'wifi', Icon: Wifi, label: 'Wi-Fi' },
-                { key: 'bluetooth', Icon: Bluetooth, label: 'BT' },
-                { key: 'dnd', Icon: Moon, label: 'DND' },
-                { key: 'autoBright', Icon: Sun, label: 'Авто' },
-              ].map(({ key, Icon, label }) => {
-                const active = toggles[key];
-                return (
-                  <button
-                    key={key}
-                    onClick={() => handleToggle(key)}
-                    className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-2xl transition-colors ${active ? 'bg-blue-500 text-white' : 'bg-zinc-800 text-zinc-300'}`}
-                  >
-                    <Icon size={18} strokeWidth={1.8} />
-                    <span className="text-[9px] leading-none">{label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="text-xs text-zinc-500 px-1 mb-1.5">Уведомления</div>
-            <div className="space-y-1.5 max-h-72 overflow-y-auto pb-2">
-              {germanThreat && (
-                <div className="w-full flex items-center gap-3 bg-orange-900/60 border border-orange-700 rounded-2xl px-3 py-2.5">
-                  <div className="w-9 h-9 bg-orange-600 rounded-full flex items-center justify-center text-base flex-shrink-0">😐</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between">
-                      <span className="text-xs font-semibold text-white">Герман</span>
-                      <span className="text-[10px] text-orange-200">сейчас</span>
-                    </div>
-                    <div className="text-xs text-orange-100 truncate">«Я знаю, что телефон у тебя. Не лезь в это.»</div>
-                  </div>
-                </div>
-              )}
-              {NOTIFICATIONS.map((n, i) => (
-                <button
-                  key={i}
-                  onClick={() => (n.threadId ? openThread(n.threadId) : setShadeOpen(false))}
-                  className="w-full flex items-center gap-3 bg-zinc-800 rounded-2xl px-3 py-2.5 text-left active:scale-[0.98] transition-transform"
-                >
-                  <div className="w-9 h-9 bg-zinc-700 rounded-full flex items-center justify-center text-base flex-shrink-0">{n.icon}</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between">
-                      <span className="text-xs font-semibold text-white">{n.app}</span>
-                      <span className="text-[10px] text-zinc-500">{n.time}</span>
-                    </div>
-                    <div className="text-xs text-zinc-400 truncate">{n.text}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <button onClick={() => setShadeOpen(false)} className="w-full flex justify-center py-2 text-zinc-500 active:opacity-60">
-              <ChevronDown size={20} className="rotate-180" />
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
