@@ -14,22 +14,24 @@ export default function DarkCall({ onEnd }) {
 
   const accept = () => {
     setStage('connected');
-    // Голос "диктует" — через 3.5 сек глитч и обрыв
     setTimeout(() => setStage('glitch'), 3500);
     setTimeout(() => onEnd(), 4200);
   };
 
   const decline = () => {
-    // Игнорируем сброс — звонок продолжается (можно 1 раз)
+    // Сброс НЕ работает — звонок продолжается (это фича)
+    setStage('ringing');
   };
 
-  // Формат мм:сс
   const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
   return (
     <div className="absolute inset-0 z-[150] flex flex-col overflow-hidden">
-      {/* Тёмный градиентный фон */}
-      <div className={`absolute inset-0 ${stage === 'glitch' ? 'bg-red-900' : 'bg-gradient-to-b from-zinc-900 to-black'} transition-colors duration-150`} />
+      <div
+        className={`absolute inset-0 ${
+          stage === 'glitch' ? 'bg-red-900' : 'bg-gradient-to-b from-zinc-900 to-black'
+        } transition-colors duration-150`}
+      />
 
       {stage === 'glitch' && (
         <div
@@ -43,7 +45,6 @@ export default function DarkCall({ onEnd }) {
       )}
 
       <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-8 text-white">
-        {/* Верх — статус */}
         <div className="text-center mt-12">
           <div className="text-xs text-red-400 tracking-widest mb-2">
             {stage === 'ringing' && '▲ ВХОДЯЩИЙ'}
@@ -58,19 +59,14 @@ export default function DarkCall({ onEnd }) {
           </div>
 
           {stage === 'ringing' && (
-            <div className="mt-4 text-sm text-zinc-400 animate-pulse">
-              Входящий вызов…
-            </div>
+            <div className="mt-4 text-sm text-zinc-400 animate-pulse">Входящий вызов…</div>
           )}
 
           {stage === 'connected' && (
-            <div className="mt-4 text-sm text-zinc-400 font-mono">
-              {fmt(timer)}
-            </div>
+            <div className="mt-4 text-sm text-zinc-400 font-mono">{fmt(timer)}</div>
           )}
         </div>
 
-        {/* Центр — "голос" */}
         {stage === 'connected' && (
           <div className="text-center px-4">
             <div className="flex justify-center gap-1 mb-4">
@@ -78,10 +74,7 @@ export default function DarkCall({ onEnd }) {
                 <div
                   key={i}
                   className="w-1 bg-red-500 rounded-full animate-pulse"
-                  style={{
-                    height: `${12 + Math.random() * 24}px`,
-                    animationDelay: `${i * 0.1}s`,
-                  }}
+                  style={{ height: `${12 + Math.random() * 24}px`, animationDelay: `${i * 0.1}s` }}
                 />
               ))}
             </div>
@@ -95,16 +88,11 @@ export default function DarkCall({ onEnd }) {
 
         {stage === 'glitch' && (
           <div className="text-center">
-            <div className="text-4xl font-bold text-red-400 animate-pulse">
-              [!]
-            </div>
-            <div className="text-xs text-red-300 mt-2 font-mono">
-              SIGNAL LOST
-            </div>
+            <div className="text-4xl font-bold text-red-400 animate-pulse">[!]</div>
+            <div className="text-xs text-red-300 mt-2 font-mono">SIGNAL LOST</div>
           </div>
         )}
 
-        {/* Низ — кнопки */}
         {stage === 'ringing' && (
           <div className="flex justify-around w-full max-w-xs mb-12">
             <button
