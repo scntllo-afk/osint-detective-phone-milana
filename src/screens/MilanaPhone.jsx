@@ -425,26 +425,36 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
               <button onClick={onBack} className="text-blue-500"><ChevronLeft size={24} /></button>
               <span className="text-sm font-semibold">Галерея</span>
             </div>
-            <div className="flex-1 overflow-y-auto p-3 grid grid-cols-2 gap-2">
+            
+            <div className="flex-1 overflow-y-auto p-3 grid grid-cols-2 gap-2 auto-rows-max">
               {GALLERY_FILES.map((file) => (
                 <button
                   key={file.id}
                   onClick={() => file.type !== 'deleted' && setViewingPhoto(file)}
-                  className={`aspect-square rounded-lg flex items-center justify-center text-xs text-center p-2 ${
-                    file.type === 'deleted'
-                      ? 'bg-zinc-800 text-zinc-500 opacity-50 line-through cursor-default'
-                      : file.type === 'screenshot'
-                      ? 'bg-blue-900 text-blue-200 font-semibold border border-blue-700'
-                      : 'bg-zinc-800 hover:bg-zinc-700'
+                  className={`relative w-full aspect-square rounded-xl overflow-hidden flex items-center justify-center bg-zinc-900 border border-zinc-800 ${
+                    file.type === 'deleted' ? 'opacity-40 cursor-default grayscale' : 'hover:opacity-80 transition-opacity'
                   }`}
                 >
-                  {file.name}
+                  <img
+                    src={file.url}
+                    alt="" 
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover z-10"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  
+                  {file.type === 'screenshot' && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-blue-600/90 text-[10px] text-white p-1 z-20 text-center uppercase tracking-wider">
+                      Скриншот
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
-            <div className="bg-zinc-900 border-t border-zinc-800 p-3 text-center text-xs text-zinc-400">
-              💡 Скриншоты Telegram содержат адрес: @m_lebedeva_press
-            </div>
+          
           </div>
         )}
 
@@ -478,12 +488,16 @@ export default function MilanaPhone({ onBack, initialScreen = 'threads' }) {
       </div>
 
       {viewingPhoto && (
-        <div className="absolute inset-0 z-[70] bg-black/90 flex flex-col items-center justify-center p-6" onClick={() => setViewingPhoto(null)}>
-          <button className="absolute top-4 right-4 text-white/70" onClick={() => setViewingPhoto(null)}><X size={24} /></button>
-          <div className="w-full max-w-xs aspect-square bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-500 text-sm text-center p-6">
-            {viewingPhoto.name}
+        <div className="absolute inset-0 z-[70] bg-black/95 flex flex-col items-center justify-center p-4 backdrop-blur-sm" onClick={() => setViewingPhoto(null)}>
+          <button className="absolute top-4 right-4 text-white/70 hover:text-white" onClick={() => setViewingPhoto(null)}><X size={24} /></button>
+          
+          <div className="w-full max-w-sm rounded-2xl overflow-hidden flex items-center justify-center">
+            <img 
+              src={viewingPhoto.url} 
+              alt="" 
+              className="w-full max-h-[70vh] object-contain"
+            />
           </div>
-          <div className="text-xs text-zinc-500 mt-3">{viewingPhoto.name}</div>
         </div>
       )}
     </div>

@@ -150,16 +150,16 @@ export const PHONE_CALLS = [
 ];
 
 export const GALLERY_FILES = [
-  { id: 1, name: 'cat_bonya.jpg', type: 'personal' },
-  { id: 2, name: 'gym_selfie.jpg', type: 'personal' },
-  { id: 3, name: 'nastya_bday.jpg', type: 'personal' },
-  { id: 4, name: 'sunset_balcony.jpg', type: 'personal' },
-  { id: 5, name: 'Screenshot_Telegram_1.jpg', type: 'screenshot' },
-  { id: 6, name: 'Screenshot_Telegram_2.jpg', type: 'screenshot' },
-  { id: 7, name: 'photo_park_lev.jpg', type: 'deleted' },
-  { id: 8, name: 'photo_cafe_lev.jpg', type: 'deleted' },
-  { id: 9, name: 'food_sushi.jpg', type: 'personal' },
-  { id: 10, name: 'Screenshot_OD17_chat.jpg', type: 'screenshot' },
+  { id: 1, url: '/cat_bonya.jpg', type: 'personal' },
+  { id: 2, url: '/gym_selfie.jpg', type: 'personal' },
+  { id: 3, url: '/nastya_bday.jpg', type: 'personal' },
+  { id: 4, url: '/sunset_balcony.jpg', type: 'personal' },
+  { id: 5, url: '/telegram_1.jpg', type: 'screenshot' },
+  { id: 6, url: '/telegram_2.jpg', type: 'screenshot' },
+  { id: 7, url: '/park_lev.jpg', type: 'deleted' },
+  { id: 8, url: '/cafe_lev.jpg', type: 'deleted' },
+  { id: 9, url: '/food_sushi.jpg', type: 'personal' },
+  { id: 10, url: '/od17_chat.jpg', type: 'screenshot' },
 ];
 
 export const NOTIFICATIONS = [
